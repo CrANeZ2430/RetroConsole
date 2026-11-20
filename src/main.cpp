@@ -16,7 +16,7 @@ static constexpr uint8_t clock = 13;
 const int NUM_DEVICES = 8;
 LedControl lc = LedControl(11, 13, 10, NUM_DEVICES);
 
-uint32_t data[16] = {
+uint32_t board[16] = {
   0b11100000000000000000000000011100,
   0b00100000000000000000000000000000,
   0b00000000000000000000000000000000,
@@ -35,6 +35,15 @@ uint32_t data[16] = {
   0b00000000000000000000000000000000
 };
 
+//uint32_t frame[16];
+
+typedef struct{
+  bool right;
+  bool left;
+} direction;
+
+void setPixel(int, int, bool);
+direction readMovement();
 void flushBuffer(uint32_t[]);
 uint8_t reverseBuffer(uint8_t);
 
@@ -44,22 +53,64 @@ void setup() {
   // lc.clearDisplay(4);
 
   // for (int row = 0; row < 8; row++){
-  //   lc.setRow(4, row, data[row]);
+  //   lc.setRow(4, row, board[row]);
   // }
 
   // delay(500);
-  flushBuffer(data);
+  Serial.begin(9600);
+  setPixel(0, 0, true);
+  // for (int i = 0; i < 16; i++){
+  //   Serial.println(board[i]);
+  // }
+  flushBuffer(board);
 }
 
 void loop() {
-  // data[0] = data[0] >> 1;
-  // data[1] = data[1] >> 1;
+  // board[0] = board[0] >> 1;
+  // board[1] = board[1] >> 1;
 
   // for (int row = 0; row < 8; row++){
-  //   lc.setRow(4, row, data[row]);
+  //   lc.setRow(4, row, board[row]);
   // }
 
   // delay(500);
+
+  direction mov = readMovement();
+  if (mov.right){
+    Serial.println("Right");
+  }
+  else if (mov.left){
+    Serial.println("Left");
+  }
+  else{
+    Serial.println("Nothing");
+  }
+
+  delay(500);
+}
+
+void setPixel(int x, int y, bool on){
+  uint32_t row = 1UL << y;
+  if (on){
+    board[15-x] |= row;
+  }
+  else{
+    board[15-x] &= ~row;
+  }
+}
+
+direction readMovement(){
+  joystickState state = readJoystick(analogX, analogY, joystickButton);
+  Serial.println(state.x);
+  if (state.x > 600){
+    return {true, false};
+  }
+  else if (state.x < 100) {
+    return {false, true};
+  }
+  else {
+    return {false, false};
+  }
 }
 
 void flushBuffer(uint32_t data[]){
@@ -116,3 +167,4 @@ uint8_t reverseBuffer(uint8_t b){
   }
   return rev;
 }
+

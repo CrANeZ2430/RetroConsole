@@ -18,7 +18,8 @@
       "left": -357.04,
       "rotate": 180,
       "attrs": { "chain": "4" }
-    }
+    },
+    { "type": "wokwi-analog-joystick", "id": "joystick1", "top": 249, "left": 255, "attrs": {} }
   ],
   "connections": [
     [ "matrix1:CLK", "uno:13", "green", [ "h0" ] ],
@@ -30,7 +31,10 @@
     [ "matrix1:CS.2", "matrix2:CS", "green", [ "h-19.04", "v57.6" ] ],
     [ "matrix1:DOUT", "matrix2:DIN", "green", [ "h-28.64", "v76.8" ] ],
     [ "matrix1:GND.2", "matrix2:GND", "black", [ "h-38.24", "v96" ] ],
-    [ "uno:5V", "matrix2:V+", "red", [ "v19.1", "h-447.4" ] ]
+    [ "uno:5V", "matrix2:V+", "red", [ "v19.1", "h-447.4" ] ],
+    [ "joystick1:VCC", "uno:3.3V", "red", [ "v28.8", "h-240" ] ],
+    [ "joystick1:GND", "uno:GND.2", "black", [ "v48", "h-259.2", "v-9.6" ] ],
+    [ "joystick1:HORZ", "uno:A0", "green", [ "v38.4", "h-211.2" ] ]
   ],
   "dependencies": {}
 }
