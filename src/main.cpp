@@ -56,20 +56,7 @@ typedef struct{
 void flushBuffer(uint32_t[16]);
 uint8_t reverseBuffer(uint8_t);
 void setPixel(Coordinate*, bool);
-
-// Direction readMovement(){
-//   JoystickState state = readJoystick(analogX, analogY, joystickButton);
-//   Serial.println(state.x);
-//   if (state.x > 600){
-//     return {false, true};
-//   }
-//   else if (state.x < 100) {
-//     return {true, false};
-//   }
-//   else {
-//     return {false, false};
-//   }
-// }
+bool getPixel(Coordinate*);
 
 void drawObstacle(const Obstacle* obstacle){
   for (size_t i = 0; i < obstacle->count; ++i) {
@@ -88,7 +75,8 @@ bool canMoveObstacle(Obstacle* obstacle, Direction* direction){
     uint8_t nextX = obstacle->pieces[i].x + direction->dx;
     uint8_t nextY = obstacle->pieces[i].y + direction->dy;
 
-    if (nextX < 0 || nextX > maxX || nextY < 0 || nextY > maxY) {
+    if (nextX < 0 || nextX > maxX || 
+      nextY < 0 || nextY > maxY) {
       return false;
     }
   }
@@ -118,12 +106,31 @@ void moveObstacle(Direction* direction, Obstacle* obstacle){
 }
 
 void setPixel(Coordinate* coordinate, bool on){
+  if (coordinate->x < 0 || coordinate->x > maxX || 
+    coordinate->y < 0 || coordinate->y > maxY){
+    return;
+  }
+
   uint32_t row = 1UL << (coordinate->y);
   if (on){
-    board[15-(coordinate->x)] |= row;
+    board[15-coordinate->x] |= row;
   }
   else{
-    board[15-(coordinate->x)] &= ~row;
+    board[15-coordinate->x] &= ~row;
+  }
+}
+
+bool getPixel(Coordinate* coordinate){
+  if (coordinate->x < 0 || coordinate->x > maxX || 
+    coordinate->y < 0 || coordinate->y > maxY){
+    return false;
+  }
+
+  if ((board[15-coordinate->x] & (1UL << coordinate->y)) != 0){
+    return true;
+  }
+  else{
+    return false;
   }
 }
 
@@ -141,6 +148,8 @@ void setup() {
   }
 
   drawObstacle(&obstacle);
+  Coordinate coord{15, 3};
+  Serial.println(getPixel(&coord) == false ? "No" : "Yes");
 }
 
 void loop() {
