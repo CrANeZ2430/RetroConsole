@@ -6,6 +6,6 @@ typedef struct {
     int x;
     int y;
     bool pressed;
-} joystickState;
+} JoystickState;
 
-joystickState readJoystick(uint8_t pinX, uint8_t pinY, uint8_t pinButton);
+JoystickState readJoystick(uint8_t pinX, uint8_t pinY, uint8_t pinButton);
