@@ -13,15 +13,15 @@ static constexpr uint8_t dataInput = 10;
 static constexpr uint8_t chipSelect = 11;
 static constexpr uint8_t clock = 13;
 
-const int NUM_DEVICES = 8;
-LedControl lc = LedControl(11, 13, 10, NUM_DEVICES);
+static constexpr int NUM_DEVICES = 8;
+static LedControl lc = LedControl(11, 13, 10, NUM_DEVICES);
 
-uint32_t board[16] = {
-  0b11100000000000000000000000011100,
-  0b00100000000000000000000000000000,
+static uint32_t board[16] = {
+  0b00000000000000000000000000011100,
+  0b00000000000000000000000000000000,
   0b00000000000000000000000000000000,
   0b00000000000000000111000000000000,
-  0b00000000000000000000000000000000,
+  0b11100000000000000000000000000000,
   0b00000001100000000000000000000000,
   0b00000000000000000000001000000000,
   0b00000000000000000000001000000000,
@@ -35,11 +35,12 @@ uint32_t board[16] = {
   0b00000000000000000000000000000000
 };
 
-//uint32_t frame[16];
+static constexpr uint8_t maxX = 15;
+static constexpr uint8_t maxY = 31;
 
 typedef struct{
-  bool right;
-  bool left;
+  int8_t dx;
+  int8_t dy;
 } Direction;
 
 typedef struct{
@@ -56,19 +57,19 @@ void flushBuffer(uint32_t[16]);
 uint8_t reverseBuffer(uint8_t);
 void setPixel(Coordinate*, bool);
 
-Direction readMovement(){
-  JoystickState state = readJoystick(analogX, analogY, joystickButton);
-  Serial.println(state.x);
-  if (state.x > 600){
-    return {false, true};
-  }
-  else if (state.x < 100) {
-    return {true, false};
-  }
-  else {
-    return {false, false};
-  }
-}
+// Direction readMovement(){
+//   JoystickState state = readJoystick(analogX, analogY, joystickButton);
+//   Serial.println(state.x);
+//   if (state.x > 600){
+//     return {false, true};
+//   }
+//   else if (state.x < 100) {
+//     return {true, false};
+//   }
+//   else {
+//     return {false, false};
+//   }
+// }
 
 void drawObstacle(const Obstacle* obstacle){
   for (size_t i = 0; i < obstacle->count; ++i) {
@@ -78,13 +79,26 @@ void drawObstacle(const Obstacle* obstacle){
   flushBuffer(board);
 }
 
-void moveObstacle(Direction* direction, Obstacle* obstacle){
-  uint8_t dx = 0;
-  if (direction->left){
-    dx = -1;
+bool canMoveObstacle(Obstacle* obstacle, Direction* direction){
+  if (!obstacle || !obstacle->pieces || obstacle->count == 0) {
+    return false;
   }
-  else if (direction-> right){
-    dx = 1;
+
+  for (uint8_t i = 0; i < obstacle->count; ++i){
+    uint8_t nextX = obstacle->pieces[i].x + direction->dx;
+    uint8_t nextY = obstacle->pieces[i].y + direction->dy;
+
+    if (nextX < 0 || nextX > maxX || nextY < 0 || nextY > maxY) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void moveObstacle(Direction* direction, Obstacle* obstacle){
+  if (!canMoveObstacle(obstacle, direction)){
+    return;
   }
 
   for (uint8_t i = 0; i < obstacle->count; ++i){
@@ -92,7 +106,11 @@ void moveObstacle(Direction* direction, Obstacle* obstacle){
   }
 
   for (uint8_t i = 0; i < obstacle->count; ++i){
-    obstacle->pieces[i].x += dx;
+    if (direction->dx != 0)
+      obstacle->pieces[i].x += direction->dx;
+    if (direction->dy != 0)
+      obstacle->pieces[i].y += direction->dy;
+    
     setPixel(&obstacle->pieces[i], true);
   }
 
@@ -109,6 +127,10 @@ void setPixel(Coordinate* coordinate, bool on){
   }
 }
 
+Coordinate pieces[] = {{0, 31}, {0, 30}, {0, 29}, {1, 29}};
+Obstacle obstacle{pieces, 4};
+Direction direction{1, 0};
+
 void setup() {
   Serial.begin(9600);
 
@@ -118,16 +140,12 @@ void setup() {
     lc.clearDisplay(i);
   }
 
-  Coordinate pieces[] = {{0, 31}, {0, 30}, {0, 29}, {1, 29}};
-  Direction direction{true, false};
-  Obstacle obstacle{pieces, 4};
   drawObstacle(&obstacle);
-
-  delay(200);
-  moveObstacle(&direction, &obstacle);
 }
 
 void loop() {
+  delay(500);
+  moveObstacle(&direction, &obstacle);
 }
 
 void flushBuffer(uint32_t data[16]){
