@@ -31,7 +31,7 @@ static uint32_t board[16] = {
   0b00000000000000011000000000000000,
   0b00000000000000000000000000000000,
   0b00000000000000000000000000001111,
-  0b00000000000000000000000000000000,
+  0b00000000000000000000000000000111,
   0b00000000000000000000000000000000
 };
 
@@ -47,6 +47,13 @@ typedef struct{
   uint8_t x;
   uint8_t y;
 } Coordinate;
+
+bool compareCoordinates(Coordinate* c1, Coordinate* c2){
+  if (!c1 || !c2) {
+    return false;
+  }
+  return c1->x == c2->x && c1->y == c2->y;
+}
 
 typedef struct{
   Coordinate* pieces;
@@ -66,21 +73,30 @@ void drawObstacle(const Obstacle* obstacle){
   flushBuffer(board);
 }
 
-bool canMoveObstacle(Obstacle* obstacle, Direction* direction){
-  if (!obstacle || !obstacle->pieces || obstacle->count == 0) {
-    return false;
+bool isOwnPiece(const Obstacle* obstacle, const Coordinate* target) {
+  for (uint8_t j = 0; j < obstacle->count; ++j) {
+    if (compareCoordinates(target, &obstacle->pieces[j])) {
+      return true;
+    }
   }
+  return false;
+}
 
-  for (uint8_t i = 0; i < obstacle->count; ++i){
-    uint8_t nextX = obstacle->pieces[i].x + direction->dx;
-    uint8_t nextY = obstacle->pieces[i].y + direction->dy;
+bool canMoveObstacle(Obstacle* obstacle, Direction* direction){
+  for (uint8_t i = 0; i < obstacle->count; ++i) {
+    int nextX = obstacle->pieces[i].x + direction->dx;
+    int nextY = obstacle->pieces[i].y + direction->dy;
 
-    if (nextX < 0 || nextX > maxX || 
-      nextY < 0 || nextY > maxY) {
+    if (nextX < 0 || nextX > maxX || nextY < 0 || nextY > maxY) {
+      return false;
+    }
+
+    Coordinate nextCoord{static_cast<uint8_t>(nextX), static_cast<uint8_t>(nextY)};
+    if (!isOwnPiece(obstacle, &nextCoord) && getPixel(&nextCoord)) {
       return false;
     }
   }
-
+  
   return true;
 }
 
@@ -136,7 +152,7 @@ bool getPixel(Coordinate* coordinate){
 
 Coordinate pieces[] = {{0, 31}, {0, 30}, {0, 29}, {1, 29}};
 Obstacle obstacle{pieces, 4};
-Direction direction{1, 0};
+Direction direction{0, -1};
 
 void setup() {
   Serial.begin(9600);
