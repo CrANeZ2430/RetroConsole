@@ -58,7 +58,7 @@ bool canMoveObstacleY(uint32_t board[16], const Obstacle* obstacle, const Direct
 void moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction, Obstacle* obstacle, bool isSpawning){
     uint8_t dx = direction->dx;
     uint8_t dy = direction->dy;
-    
+        
     if (!canMoveObstacleY(board, obstacle, direction, isSpawning)){
         return;
     }
@@ -76,7 +76,7 @@ void moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction
         obstacle->pieces[i].x += dx;
         if (dy != 0)
         obstacle->pieces[i].y += dy;
-        
+            
         setPixel(board, &obstacle->pieces[i], true);
     }
 

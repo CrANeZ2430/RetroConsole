@@ -4,15 +4,15 @@
 #include <LedControl.h>
 #include "../display/Display.hpp"
 
-typedef struct{
-  int8_t dx;
-  int8_t dy;
-} Direction;
+struct Direction{
+    int8_t dx;
+    int8_t dy;
+};
 
-typedef struct{
-  Coordinate* pieces;
-  uint8_t count;
-} Obstacle;
+struct Obstacle{
+    Coordinate* pieces;
+    uint8_t count;
+};
 
 void drawObstacle(LedControl*, uint32_t[16], const Obstacle*);
 bool isOwnPiece(const Obstacle*, const Coordinate*);
