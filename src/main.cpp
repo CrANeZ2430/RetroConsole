@@ -42,13 +42,22 @@ static constexpr uint8_t maxY = 31;
 Direction getDirection(){
   JoystickState state = readJoystick(analogX, analogY, joystickButton);
   if (state.x > 600){
-    return {1, 0};
+    return {-1, 0};
   }
   else if (state.x < 100){
-    return {-1, 0};
+    return {1, 0};
   }
   else{
     return {0, 0};
+  }
+}
+
+void spawnObstacle(Obstacle* obstacle, uint8_t height){
+  for (uint8_t i = 0; i < height; ++i){
+      Direction dir = getDirection();
+      Direction down = {dir.dx, -1};
+      moveObstacle(&lc, board, &down, obstacle, true);
+      delay(250);
   }
 }
 
@@ -56,29 +65,21 @@ static Obstacle obstacle;
 static Coordinate coordinates[4];
 
 void setup() {
-
-  Serial.begin(9600);
   for (int i = 0; i < NUM_DEVICES; ++i) {
     lc.shutdown(i, false);
     lc.setIntensity(i, 4);
     lc.clearDisplay(i);
   }
 
-  //drawObstacle(&obstacle);
-  // spawnObstacle(&obstacle, 3);
   initRandomObstacle(&obstacle, coordinates);
-  for (uint8_t i = 0; i < obstacle.count; ++i){
-    Serial.print(obstacle.pieces[i].x);
-    Serial.print("|");
-    Serial.println(obstacle.pieces[i].y);
-  }
   flushBuffer(board, &lc);
   delay(250);
+  spawnObstacle(&obstacle, 3);
 }
 
 void loop() {
   Direction dir = getDirection();
   Direction down = {dir.dx, -1};
-  moveObstacle(&lc, board, &down, &obstacle);
+  moveObstacle(&lc, board, &down, &obstacle, false);
   delay(250);
 }
