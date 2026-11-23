@@ -34,7 +34,9 @@
     [ "uno:5V", "matrix2:V+", "red", [ "v19.1", "h-447.4" ] ],
     [ "joystick1:VCC", "uno:3.3V", "red", [ "v28.8", "h-240" ] ],
     [ "joystick1:GND", "uno:GND.2", "black", [ "v48", "h-259.2", "v-9.6" ] ],
-    [ "joystick1:HORZ", "uno:A0", "green", [ "v38.4", "h-211.2" ] ]
+    [ "joystick1:HORZ", "uno:A0", "green", [ "v38.4", "h-211.2" ] ],
+    [ "joystick1:VERT", "uno:A1", "green", [ "v57.6", "h-172.8" ] ],
+    [ "joystick1:SEL", "uno:A2", "green", [ "v67.2", "h-192", "v-9.6" ] ]
   ],
   "dependencies": {}
 }

@@ -55,12 +55,12 @@ bool canMoveObstacleY(uint32_t board[16], const Obstacle* obstacle, const Direct
     return true;
 }
 
-void moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction, Obstacle* obstacle, bool isSpawning){
+bool moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction, Obstacle* obstacle, bool isSpawning){
     uint8_t dx = direction->dx;
     uint8_t dy = direction->dy;
         
     if (!canMoveObstacleY(board, obstacle, direction, isSpawning)){
-        return;
+        return true;
     }
 
     if (!canMoveObstacleX(board, obstacle, direction, isSpawning)){
@@ -81,15 +81,5 @@ void moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction
     }
 
     flushBuffer(board, lc);
-}
-
-void initRandomObstacle(Obstacle* outObstacle, Coordinate outPieces[4]){
-    uint8_t x = static_cast<uint8_t>(random(0, 15));
-    outPieces[0] = {x, 34};
-    outPieces[1] = {x, 33};
-    outPieces[2] = {x, 32};
-    outPieces[3] = {static_cast<uint8_t>(x + 1), 32};
-
-    outObstacle->pieces = outPieces;
-    outObstacle->count = 4;
+    return false;
 }
