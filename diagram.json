@@ -19,7 +19,15 @@
       "rotate": 180,
       "attrs": { "chain": "4" }
     },
-    { "type": "wokwi-analog-joystick", "id": "joystick1", "top": 249, "left": 255, "attrs": {} }
+    { "type": "wokwi-analog-joystick", "id": "joystick1", "top": 249, "left": 255, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 115.1,
+      "left": 195.5,
+      "rotate": 90,
+      "attrs": { "color": "green", "xray": "1" }
+    }
   ],
   "connections": [
     [ "matrix1:CLK", "uno:13", "green", [ "h0" ] ],
@@ -36,7 +44,9 @@
     [ "joystick1:GND", "uno:GND.2", "black", [ "v48", "h-259.2", "v-9.6" ] ],
     [ "joystick1:HORZ", "uno:A0", "green", [ "v38.4", "h-211.2" ] ],
     [ "joystick1:VERT", "uno:A1", "green", [ "v57.6", "h-172.8" ] ],
-    [ "joystick1:SEL", "uno:A2", "green", [ "v67.2", "h-192", "v-9.6" ] ]
+    [ "joystick1:SEL", "uno:A2", "green", [ "v67.2", "h-192", "v-9.6" ] ],
+    [ "btn1:2.r", "uno:A3", "green", [ "v144.2", "h-86.6" ] ],
+    [ "btn1:1.l", "uno:GND.2", "green", [ "v-67.2", "h-172.8" ] ]
   ],
   "dependencies": {}
 }

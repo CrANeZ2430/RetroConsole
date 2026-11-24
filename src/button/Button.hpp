@@ -2,4 +2,4 @@
 
 #include <Arduino.h>
 
-int readButton(uint8_t pinButton);
+bool readButton(uint8_t pinButton);

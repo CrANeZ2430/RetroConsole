@@ -1,5 +1,5 @@
 #include "Button.hpp"
 
-int readButton(uint8_t pinButton){
+bool readButton(uint8_t pinButton){
     return digitalRead(pinButton);
 }
