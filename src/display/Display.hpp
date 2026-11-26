@@ -1,15 +1,18 @@
 #pragma once
 
-#include <Arduino.h>
 #include <LedControl.h>
+#include "physics/Physics.hpp"
 
-typedef struct{
-    uint8_t x;
-    uint8_t y;
-} Coordinate;
+extern uint32_t pause[16];
+extern uint32_t loss[16];
+extern uint32_t score[16];
 
-bool compareCoordinates(const Coordinate*, const Coordinate*);
-void flushBuffer(uint32_t[16], LedControl*);
-uint8_t reverseBuffer(uint8_t);
+bool compareCoordinates(Coordinate*, Coordinate*);
+void flushBuffer(LedControl*, uint32_t[16]);
 void setPixel(uint32_t[16], const Coordinate*, bool);
 bool getPixel(uint32_t[16], const Coordinate*);
+bool checkRowWin(uint32_t[16], uint8_t);
+void setRow(LedControl* lc, uint32_t[16], uint8_t, bool);
+bool rowContains(uint32_t[16], uint8_t, bool);
+void moveRow(uint32_t[16], uint8_t, uint8_t);
+void clearBoard(LedControl*, uint32_t[16]);
