@@ -12,16 +12,26 @@ static constexpr uint8_t joystickButton = A2;
 static constexpr uint8_t menuButton = A3;
 //static constexpr uint8_t pauseButton = A4;
 
-static constexpr uint8_t dataInput = 11;
-static constexpr uint8_t chipSelect = 10;
+static constexpr uint8_t dataInput1 = 11;
+static constexpr uint8_t chipSelect1 = 10;
+static constexpr uint8_t dataInput2 = 9;
+static constexpr uint8_t chipSelect2 = 8;
 static constexpr uint8_t clock = 13;
 
-static constexpr uint8_t NUM_DEVICES = 8;
-static LedControl lc = LedControl(dataInput, clock, chipSelect, NUM_DEVICES);
+static constexpr uint8_t NUM_DEVICES = 4;
+static constexpr uint8_t LC_COUNT = 2;
+
+
+static LedControl lcs[LC_COUNT] = {
+    LedControl(dataInput1, clock, chipSelect1, NUM_DEVICES),
+    LedControl(dataInput2, clock, chipSelect2, NUM_DEVICES)
+};
 
 static uint32_t board[16] = {
-    0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL,
-    0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL
+    0UL, 0UL, 0UL, 0UL,
+    0UL, 0UL, 0UL, 0UL,
+    0UL, 0UL, 0UL, 0UL,
+    0UL, 0UL, 0UL, 0UL
 };
 
 static uint32_t lastMenuChangeMs = 0;
@@ -32,23 +42,26 @@ static bool buttonPressed = false;
 
 void setup() {
     randomSeed(analogRead(A5));
-    for (int i = 0; i < NUM_DEVICES; ++i) {
-        lc.shutdown(i, false);
-        lc.setIntensity(i, 4);
-        lc.clearDisplay(i);
+
+    for (int lcNum = 0; lcNum < LC_COUNT; ++lcNum) {
+        for (int displayNum = 0; displayNum < NUM_DEVICES; ++displayNum) {
+            lcs[lcNum].shutdown(displayNum, false);
+            lcs[lcNum].setIntensity(displayNum, 4);
+            lcs[lcNum].clearDisplay(displayNum);
+        }
     }
 
     pinMode(menuButton, INPUT_PULLUP);
 
     initObstacle(&currentObstacle);
-    flushBuffer(&lc, board);
+    flushBuffer(lcs, board);
 }
 
 void loop() {
     if (gameState == Playing) {
         Direction direction = getDirection(joystickX, joystickY, joystickButton);
         direction.dy = -1;
-        moveObstacle(&lc, board, &direction, &currentObstacle, true);
+        moveObstacle(lcs, board, &direction, &currentObstacle, true);
 
         delay(50);
     }

@@ -16,7 +16,6 @@
       "id": "matrix2",
       "top": -57.4,
       "left": -357.04,
-      "rotate": 180,
       "attrs": { "chain": "4" }
     },
     { "type": "wokwi-analog-joystick", "id": "joystick1", "top": 249, "left": 255, "attrs": {} },
@@ -35,18 +34,18 @@
     [ "matrix1:DIN", "uno:11", "green", [ "h0" ] ],
     [ "matrix1:GND", "uno:GND.1", "black", [ "h0" ] ],
     [ "matrix1:V+", "uno:5V", "red", [ "h0" ] ],
-    [ "matrix1:CLK.2", "matrix2:CLK", "green", [ "h-9.44", "v38.4" ] ],
-    [ "matrix1:CS.2", "matrix2:CS", "green", [ "h-19.04", "v57.6" ] ],
-    [ "matrix1:DOUT", "matrix2:DIN", "green", [ "h-28.64", "v76.8" ] ],
-    [ "matrix1:GND.2", "matrix2:GND", "black", [ "h-38.24", "v96" ] ],
-    [ "uno:5V", "matrix2:V+", "red", [ "v19.1", "h-447.4" ] ],
     [ "joystick1:VCC", "uno:3.3V", "red", [ "v28.8", "h-240" ] ],
     [ "joystick1:GND", "uno:GND.2", "black", [ "v48", "h-259.2", "v-9.6" ] ],
     [ "joystick1:HORZ", "uno:A0", "green", [ "v38.4", "h-211.2" ] ],
     [ "joystick1:VERT", "uno:A1", "green", [ "v57.6", "h-172.8" ] ],
     [ "joystick1:SEL", "uno:A2", "green", [ "v67.2", "h-192", "v-9.6" ] ],
     [ "btn1:2.r", "uno:A3", "green", [ "v144.2", "h-86.6" ] ],
-    [ "btn1:1.l", "uno:GND.2", "green", [ "v-67.2", "h-172.8" ] ]
+    [ "btn1:1.l", "uno:GND.2", "green", [ "v-67.2", "h-172.8" ] ],
+    [ "matrix1:GND", "matrix2:GND", "black", [ "h9.6", "v76.8" ] ],
+    [ "matrix1:V+", "matrix2:V+", "red", [ "h19.2", "v76.8" ] ],
+    [ "matrix1:CLK", "matrix2:CLK", "green", [ "h48", "v48" ] ],
+    [ "uno:9", "matrix2:DIN", "green", [ "v-86.4", "h0.8", "v-19.2" ] ],
+    [ "uno:8", "matrix2:CS", "green", [ "v0" ] ]
   ],
   "dependencies": {}
 }

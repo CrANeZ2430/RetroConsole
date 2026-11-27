@@ -12,4 +12,4 @@ struct Coordinate{
     uint8_t y;
 };
 
-bool compareCoordinates(const Coordinate* c1, const Coordinate*);
+bool compareCoordinates(const Coordinate* coord1, const Coordinate* coord2);

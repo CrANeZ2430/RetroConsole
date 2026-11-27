@@ -8,9 +8,9 @@ struct Obstacle{
     uint8_t count;
 };
 
-void drawObstacle(LedControl*, uint32_t[16], Obstacle*);
-bool isOwnPiece(const Obstacle *, const Coordinate *);
-bool canMoveObstacleX(uint32_t[16], Obstacle*, Direction*, bool);
-bool canMoveObstacleY(uint32_t[16], Obstacle*, Direction*, bool);
-bool moveObstacle(LedControl*, uint32_t[16], const Direction*, Obstacle*, bool);
-void initObstacle(Obstacle*);
+void drawObstacle(LedControl lcs[2], uint32_t board[16], Obstacle* obst);
+bool isOwnPiece(const Obstacle* obst, const Coordinate * target);
+bool canMoveObstacleX(uint32_t board[16], Obstacle* obst, Direction* dir, bool spawning);
+bool canMoveObstacleY(uint32_t board[16], Obstacle* obst, Direction* dir, bool spawning);
+bool moveObstacle(LedControl lcs[2], uint32_t board[16], const Direction* dir, Obstacle* obst, bool spawning);
+void initObstacle(Obstacle* obst);

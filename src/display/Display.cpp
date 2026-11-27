@@ -69,49 +69,33 @@ static uint8_t reverseBuffer(uint8_t b){
     return rev;
 }
 
-void flushBuffer(LedControl* lc, uint32_t data[16]){
-    for (int row = 0; row < 8; row++){
-        uint8_t buffer = data[row] >> 24;
-        buffer = reverseBuffer(buffer);
-        lc->setRow(3, row, buffer);
-    }
+void flushBuffer(LedControl lc[2], uint32_t data[16]){
+    for (int lcNum = 0; lcNum < 2; ++lcNum) {
+        const uint8_t baseRow = lcNum * 8;
 
-    for (int row = 0; row < 8; row++){
-        uint8_t buffer = data[row] >> 16;
-        buffer = reverseBuffer(buffer);
-        lc->setRow(2, row, buffer);
-    }
+        for (int rowNum = 0; rowNum < 8; rowNum++){
+            uint8_t buffer = data[baseRow + rowNum] >> 24;
+            buffer = reverseBuffer(buffer);
+            lc[lcNum].setRow(3, rowNum, buffer);
+        }
 
-    for (int row = 0; row < 8; row++){
-        uint8_t buffer = data[row] >> 8;
-        buffer = reverseBuffer(buffer);
-        lc->setRow(1, row, buffer);
-    }
+        for (int rowNum = 0; rowNum < 8; rowNum++){
+            uint8_t buffer = data[baseRow + rowNum] >> 16;
+            buffer = reverseBuffer(buffer);
+            lc[lcNum].setRow(2, rowNum, buffer);
+        }
 
-    for (int row = 0; row < 8; row++){
-        uint8_t buffer = data[row] >> 0;
-        buffer = reverseBuffer(buffer);
-        lc->setRow(0, row, buffer);
-    }
+        for (int rowNum = 0; rowNum < 8; rowNum++){
+            uint8_t buffer = data[baseRow + rowNum] >> 8;
+            buffer = reverseBuffer(buffer);
+            lc[lcNum].setRow(1, rowNum, buffer);
+        }
 
-    for (int row = 0; row < 8; row++){
-        const uint8_t buffer = data[row+8] >> 24;
-        lc->setRow(4, 7-row, buffer);
-    }
-
-    for (int row = 0; row < 8; row++){
-        const uint8_t buffer = data[row+8] >> 16;
-        lc->setRow(5, 7-row, buffer);
-    }
-
-    for (int row = 0; row < 8; row++){
-        const uint8_t buffer = data[row+8] >> 8;
-        lc->setRow(6, 7-row, buffer);
-    }
-
-    for (int row = 0; row < 8; row++){
-        const uint8_t buffer = data[row+8] >> 0;
-        lc->setRow(7, 7-row, buffer);
+        for (int rowNum = 0; rowNum < 8; rowNum++){
+            uint8_t buffer = data[baseRow + rowNum] >> 0;
+            buffer = reverseBuffer(buffer);
+            lc[lcNum].setRow(0, rowNum, buffer);
+        }
     }
 }
 
@@ -157,7 +141,7 @@ bool checkRowWin(uint32_t board[16], const uint8_t row){
     return win;
 }
 
-void setRow(LedControl* lc, uint32_t board[16], const uint8_t rowNum, const bool on){
+void setRow(LedControl lcs[2], uint32_t board[16], const uint8_t rowNum, bool on){
     if (rowNum < 0 || rowNum > 31){
         return;
     }
@@ -172,14 +156,14 @@ void setRow(LedControl* lc, uint32_t board[16], const uint8_t rowNum, const bool
             board[i] &= ~row;
         }
     }
-    flushBuffer(lc, board);
+    flushBuffer(lcs, board);
 }
 
-bool rowContains(uint32_t board[16], const uint8_t rowNum, const bool on){
+bool rowContains(uint32_t board[16], const uint8_t rowNum, bool status){
     for (uint8_t i = 0; i < 16; ++i){
         Coordinate coord = {i, rowNum};
         const bool value = getPixel(board, &coord);
-        if (value == on){
+        if (value == status){
             return true;
         }
     }
@@ -187,17 +171,17 @@ bool rowContains(uint32_t board[16], const uint8_t rowNum, const bool on){
     return false;
 }
 
-void moveRow(uint32_t board[16], const uint8_t rowNum, const uint8_t nextRowNum){
+void moveRow(uint32_t board[16], const uint8_t curRow, const uint8_t destRow){
     for (uint8_t i = 0; i < 16; ++i){
-        Coordinate coord = {i, rowNum};
+        Coordinate coord = {i, curRow};
         const bool value = getPixel(board, &coord);
         setPixel(board, &coord, false);
-        coord.y = nextRowNum;
+        coord.y = destRow;
         setPixel(board, &coord, value);
     }
 }
 
-void clearBoard(LedControl* lc, uint32_t board[16]) {
+void clearBoard(LedControl lcs[2], uint32_t board[16]) {
     board[0] = 0UL;
     board[1] = 0UL;
     board[2] = 0UL;
@@ -215,5 +199,5 @@ void clearBoard(LedControl* lc, uint32_t board[16]) {
     board[14] = 0UL;
     board[15] = 0UL;
 
-    flushBuffer(lc, board);
+    flushBuffer(lcs, board);
 }

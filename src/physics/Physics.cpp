@@ -1,8 +1,9 @@
 ﻿#include "Physics.hpp"
 
-bool compareCoordinates(const Coordinate* c1, const Coordinate* c2){
-    if (!c1 || !c2) {
+bool compareCoordinates(const Coordinate* coord1, const Coordinate* coord2){
+    if (!coord1 || !coord2) {
         return false;
     }
-    return c1->x == c2->x && c1->y == c2->y;
+    return coord1->x == coord2->x &&
+        coord1->y == coord2->y;
 }
