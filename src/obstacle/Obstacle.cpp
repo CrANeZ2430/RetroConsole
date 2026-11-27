@@ -57,7 +57,7 @@ bool canMoveObstacleY(uint32_t board[16], const Obstacle* obstacle, const Direct
     return true;
 }
 
-bool moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction, const Obstacle* obstacle, const bool isSpawning){
+bool moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction, Obstacle* obstacle, const bool isSpawning){
     uint8_t dx = direction->dx;
     uint8_t dy = direction->dy;
         
@@ -86,21 +86,68 @@ bool moveObstacle(LedControl* lc, uint32_t board[16], const Direction* direction
     return false;
 }
 
-void spawnObstacle(LedControl* lc, uint32_t board[16], Obstacle* outObstacle, Coordinate* outPieces,
-    const uint8_t height, const uint8_t analogX, const uint8_t analogY, const uint8_t joystickButton){
-    const uint8_t x = static_cast<uint8_t>(random(0, 15));
-    outPieces[0] = {x, 34};
-    outPieces[1] = {x, 33};
-    outPieces[2] = {x, 32};
-    outPieces[3] = {static_cast<uint8_t>(x + 1), 32};
+void initObstacle(Obstacle* obstacle) {
+    if (!obstacle || !obstacle->pieces) {
+        return;
+    }
 
-    outObstacle->pieces = outPieces;
-    outObstacle->count = 4;
+    const uint8_t obstacleNumber = static_cast<uint8_t>(random(0, 6));
 
-    for (uint8_t i = 0; i < height; ++i){
-        const Direction dir = getDirection(analogX, analogY, joystickButton);
-        Direction down = {dir.dx, -1};
-        moveObstacle(lc, board, &down, outObstacle, true);
-        delay(dir.dy == -1 ? 50 : 250);
+    switch (obstacleNumber) {
+        case 0: {
+            const uint8_t randomX = static_cast<uint8_t>(random(0, 15));
+            obstacle->pieces[0] = { randomX, 34 };
+            obstacle->pieces[1] = { randomX, 33 };
+            obstacle->pieces[2] = { randomX, 32 };
+            obstacle->pieces[3] = { static_cast<uint8_t>(randomX + 1), 32 };
+            obstacle->count = 4;
+            break;
+        }
+        case 1: {
+            const uint8_t randomX = static_cast<uint8_t>(random(0, 15));
+            obstacle->pieces[0] = { randomX, 32 };
+            obstacle->pieces[1] = { static_cast<uint8_t>(randomX + 1), 32 };
+            obstacle->pieces[2] = { static_cast<uint8_t>(randomX + 1), 33 };
+            obstacle->pieces[3] = { static_cast<uint8_t>(randomX + 1), 34 };
+            obstacle->count = 4;
+            break;
+        }
+        case 2: {
+            const uint8_t randomX = static_cast<uint8_t>(random(0, 15));
+            obstacle->pieces[0] = { randomX, 32 };
+            obstacle->pieces[1] = { randomX, 33 };
+            obstacle->pieces[2] = { static_cast<uint8_t>(randomX + 1), 32 };
+            obstacle->pieces[3] = { static_cast<uint8_t>(randomX + 1), 33 };
+            obstacle->count = 4;
+            break;
+        }
+        case 3: {
+            const uint8_t randomX = static_cast<uint8_t>(random(1, 14));
+            obstacle->pieces[0] = { static_cast<uint8_t>(randomX - 1), 34 };
+            obstacle->pieces[1] = { randomX, 34 };
+            obstacle->pieces[2] = { randomX, 33 };
+            obstacle->pieces[3] = { randomX, 32 };
+            obstacle->pieces[4] = { static_cast<uint8_t>(randomX + 1), 34 };
+            obstacle->count = 5;
+            break;
+        }
+        case 4: {
+            const uint8_t randomX = static_cast<uint8_t>(random(1, 14));
+            obstacle->pieces[0] = {static_cast<uint8_t>(randomX - 1), 32};
+            obstacle->pieces[1] = {randomX, 32};
+            obstacle->pieces[2] = {randomX, 33};
+            obstacle->pieces[3] = {static_cast<uint8_t>(randomX + 1), 33};
+            obstacle->count = 4;
+            break;
+        }
+        case 5: {
+            const uint8_t randomX = static_cast<uint8_t>(random(1, 14));
+            obstacle->pieces[0] = {static_cast<uint8_t>(randomX - 1), 33};
+            obstacle->pieces[1] = {randomX, 33};
+            obstacle->pieces[2] = {randomX, 32};
+            obstacle->pieces[3] = {static_cast<uint8_t>(randomX + 1), 32};
+            obstacle->count = 4;
+            break;
+        }
     }
 }

@@ -9,7 +9,7 @@ JoystickState readJoystick(const uint8_t pinX, const uint8_t pinY, const uint8_t
 }
 
 Direction getDirection(const uint8_t pinX, const uint8_t pinY, const uint8_t pinButton){
-    JoystickState state = readJoystick(pinX, pinY, pinButton);
+    const JoystickState state = readJoystick(pinX, pinY, pinButton);
     Direction dir = {0, 0};
 
     if (state.x > 600){

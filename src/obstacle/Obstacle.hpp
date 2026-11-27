@@ -4,7 +4,7 @@
 #include "physics/Physics.hpp"
 
 struct Obstacle{
-    Coordinate* pieces;
+    Coordinate pieces[5];
     uint8_t count;
 };
 
@@ -12,6 +12,5 @@ void drawObstacle(LedControl*, uint32_t[16], Obstacle*);
 bool isOwnPiece(const Obstacle *, const Coordinate *);
 bool canMoveObstacleX(uint32_t[16], Obstacle*, Direction*, bool);
 bool canMoveObstacleY(uint32_t[16], Obstacle*, Direction*, bool);
-bool moveObstacle(LedControl*, uint32_t[16], const Direction*, const Obstacle*, bool);
-void spawnObstacle(LedControl*, uint32_t[16], Obstacle*, Coordinate*,
-    uint8_t, uint8_t, uint8_t, uint8_t);
+bool moveObstacle(LedControl*, uint32_t[16], const Direction*, Obstacle*, bool);
+void initObstacle(Obstacle*);
