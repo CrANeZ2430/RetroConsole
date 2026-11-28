@@ -6,6 +6,9 @@
 #include "obstacle/Obstacle.hpp"
 #include "gameState/GameState.hpp"
 
+//static constexpr uint8_t maxX = 15;
+static constexpr uint8_t MAX_Y = 31;
+
 static constexpr uint8_t joystickX = A0;
 static constexpr uint8_t joystickY = A1;
 static constexpr uint8_t joystickButton = A2;
@@ -31,14 +34,14 @@ static uint32_t board[16] = {
     0UL, 0UL, 0UL, 0UL,
     0UL, 0UL, 0UL, 0UL,
     0UL, 0UL, 0UL, 0UL,
-    0UL, 0UL, 0UL, 0UL
+    0UL, 0UL, 0UL, 0UL,
 };
 
 static uint32_t lastMenuChangeMs = 0;
-static uint8_t rowsCleared = 0;
-static Obstacle currentObstacle = { {}, 0};
-static GameState gameState = Playing;
 static bool buttonPressed = false;
+static uint8_t rowsCleared = 0;
+static GameState gameState = Playing;
+static Obstacle curObst = { {}, 0};
 
 void setup() {
     randomSeed(analogRead(A5));
@@ -53,16 +56,53 @@ void setup() {
 
     pinMode(menuButton, INPUT_PULLUP);
 
-    initObstacle(&currentObstacle);
+    initObstacle(&curObst);
     flushBuffer(lcs, board);
 }
 
+static uint8_t delayTime = 25;
 void loop() {
     if (gameState == Playing) {
-        Direction direction = getDirection(joystickX, joystickY, joystickButton);
-        direction.dy = -1;
-        moveObstacle(lcs, board, &direction, &currentObstacle, true);
+        Direction dir = getDirection(joystickX, joystickY, joystickButton);
+        delayTime = dir.dy == -1 ? 25 : 75;
+        dir.dy = -1;
+        const bool canMove = moveObstacle(lcs, board, &dir, &curObst, true);
 
-        delay(50);
+        if (!canMove) {
+            // if (rowFullContains(board, 31)) {
+            //     gameState = Lost;
+            //     flushBuffer(lcs, loss);
+            //     return;
+            // }
+
+            for (uint8_t rowNum1 = 0; rowNum1 < MAX_Y; ++rowNum1) {
+                const bool winRow = rowFullContains(board, rowNum1);
+
+                if (winRow) {
+                    setRow(lcs, board, rowNum1, false);
+                    flushBuffer(lcs, board);
+                    delay(delayTime);
+                    setRow(lcs, board, rowNum1, true);
+                    flushBuffer(lcs, board);
+                    delay(delayTime);
+                    setRow(lcs, board, rowNum1, false);
+                    flushBuffer(lcs, board);
+                    for (uint8_t rowNum2 = rowNum1 + 1; rowNum2 <= MAX_Y; ++rowNum2) {
+                        if (rowFullContains(board, rowNum2)) {
+                            continue;
+                        }
+
+                        moveRow(board, rowNum2, rowNum2 - 1);
+                    }
+                    flushBuffer(lcs, board);
+                }
+            }
+
+            initObstacle(&curObst);
+        }
+
+        delay(delayTime);
     }
+    else if (gameState == Paused) {}
+    else if (gameState == Lost) {}
 }

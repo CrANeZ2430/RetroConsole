@@ -69,30 +69,30 @@ static uint8_t reverseBuffer(uint8_t b){
     return rev;
 }
 
-void flushBuffer(LedControl lc[2], uint32_t data[16]){
+void flushBuffer(LedControl lc[2], uint32_t board[16]){
     for (int lcNum = 0; lcNum < 2; ++lcNum) {
         const uint8_t baseRow = lcNum * 8;
 
         for (int rowNum = 0; rowNum < 8; rowNum++){
-            uint8_t buffer = data[baseRow + rowNum] >> 24;
+            uint8_t buffer = board[baseRow + rowNum] >> 24;
             buffer = reverseBuffer(buffer);
             lc[lcNum].setRow(3, rowNum, buffer);
         }
 
         for (int rowNum = 0; rowNum < 8; rowNum++){
-            uint8_t buffer = data[baseRow + rowNum] >> 16;
+            uint8_t buffer = board[baseRow + rowNum] >> 16;
             buffer = reverseBuffer(buffer);
             lc[lcNum].setRow(2, rowNum, buffer);
         }
 
         for (int rowNum = 0; rowNum < 8; rowNum++){
-            uint8_t buffer = data[baseRow + rowNum] >> 8;
+            uint8_t buffer = board[baseRow + rowNum] >> 8;
             buffer = reverseBuffer(buffer);
             lc[lcNum].setRow(1, rowNum, buffer);
         }
 
         for (int rowNum = 0; rowNum < 8; rowNum++){
-            uint8_t buffer = data[baseRow + rowNum] >> 0;
+            uint8_t buffer = board[baseRow + rowNum] >> 0;
             buffer = reverseBuffer(buffer);
             lc[lcNum].setRow(0, rowNum, buffer);
         }
@@ -127,7 +127,7 @@ bool getPixel(uint32_t board[16], const Coordinate* coordinate){
     return false;
 }
 
-bool checkRowWin(uint32_t board[16], const uint8_t row){
+bool rowFullContains(uint32_t board[16], const uint8_t row){
     if (row < 0 || row > 31){
         return false;
     }
@@ -156,7 +156,6 @@ void setRow(LedControl lcs[2], uint32_t board[16], const uint8_t rowNum, bool on
             board[i] &= ~row;
         }
     }
-    flushBuffer(lcs, board);
 }
 
 bool rowContains(uint32_t board[16], const uint8_t rowNum, bool status){
